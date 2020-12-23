@@ -34,7 +34,7 @@ highlighting. My day basically went like this:
 - But there's another wrapper!
 - ...but `textDocument/semanticTokens` isn't available. :(
 - Maybe there's some non-standard way to do it with `tsserver`?
-- Nope, semantic tokens are mentioned in the Typescript source byt not exported.
+- Nope, semantic tokens are mentioned in the Typescript source but not exported.
 - I'll make an issue: https://github.com/microsoft/TypeScript/issues/42091
 - What else is likely to have a language server? Python?
 - No `textDocument/semanticTokens` in that language server either.
