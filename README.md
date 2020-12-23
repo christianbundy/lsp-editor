@@ -71,7 +71,7 @@ If you're very lucky, you might see something like this:
 AGPL-3.0-Only
 
 [lsp]: https://microsoft.github.io/language-server-protocol/
-[lisf]: https://lsif.dev/
+[lsif]: https://lsif.dev/
 [semtok]: https://microsoft.github.io/language-server-protocol/specifications/specification-current/#textDocument_semanticTokens
 [gopls]: https://github.com/golang/tools/tree/master/gopls
 [screenshot]: https://user-images.githubusercontent.com/537700/103044416-40f03780-4535-11eb-9671-9d1c3368116e.png
