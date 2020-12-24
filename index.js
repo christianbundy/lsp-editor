@@ -1,4 +1,9 @@
 const childProcess = require("child_process");
+const path = require("path");
+const os = require("os");
+
+const directory = `file://${__dirname}`;
+const file = `file://${__dirname}/hello.go`;
 const draw = require("./draw");
 
 const gopls = childProcess.spawn("gopls", ["-vv"]);
@@ -47,10 +52,10 @@ function request(method, params) {
 
 async function main() {
   await request("initialize", {
-    rootUri: "file:///Users/christianbundy/Source/lsp-editor/hello.go",
+    rootUri: file,
     workspaceFolders: [
       {
-        uri: "file:///Users/christianbundy/Source/lsp-editor/",
+        uri: directory,
         name: "lsp-editor",
       },
     ],
@@ -104,7 +109,7 @@ async function main() {
 
   const { result } = await request("textDocument/semanticTokens/full", {
     textDocument: {
-      uri: "file:///Users/christianbundy/Source/lsp-editor/hello.go",
+      uri: file,
     },
   });
 

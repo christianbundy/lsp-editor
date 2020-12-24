@@ -59,8 +59,7 @@ It probably won't work for you.
 2. Install Node.js
 3. `git clone` and `cd` into this directory.
 4. `npm install` (only uses `chalk` library for HSV colors)
-5. Edit the source or move `hello.go` to `/Users/christianbundy/Source/lsp-editor/hello.go`
-6. `node index.js`
+5. `node index.js`
 
 If you're very lucky, you might see something like this:
 
