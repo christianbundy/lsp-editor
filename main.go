@@ -8,6 +8,7 @@ import (
 	"log"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"strconv"
 	"strings"
 )
@@ -104,8 +105,12 @@ type SemanticTokensRequest struct {
 }
 
 func main() {
-	directory := "/home/christianbundy/src/lsp-editor/"
-	file := directory + "main.go"
+	file, err := filepath.Abs(os.Args[1])
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	directory := filepath.Dir(file)
 
 	cmd := exec.Command("gopls")
 

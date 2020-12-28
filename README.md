@@ -55,9 +55,8 @@ very bad and you shouldn't assume anything I'm doing is a best practice.
 
 1. Install Go
 2. [Install gopls](https://github.com/golang/tools/blob/master/gopls/doc/user.md#installation)
-3. `git clone` and `cd` into this directory.
-4. Edit `file` and `directory` in `main()` to point to your source code.
-5. `go run main.go`
+4. `go build`
+5. `./lsp-editor main.go`
 
 If you're very lucky, you might see something like this:
 
