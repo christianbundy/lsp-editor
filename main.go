@@ -112,7 +112,15 @@ func main() {
 
 	directory := filepath.Dir(file)
 
-	cmd := exec.Command("gopls")
+  var cmd *exec.Cmd
+
+  if strings.HasSuffix(file, "Dockerfile") {
+	  cmd = exec.Command("docker-langserver", "--stdio")
+  }
+
+  if strings.HasSuffix(file, ".go") {
+	  cmd = exec.Command("gopls")
+  }
 
 	stdin, err := cmd.StdinPipe()
 

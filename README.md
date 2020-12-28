@@ -55,6 +55,7 @@ very bad and you shouldn't assume anything I'm doing is a best practice.
 
 1. Install Go
 2. [Install gopls](https://github.com/golang/tools/blob/master/gopls/doc/user.md#installation)
+3. [Install Docker-Langserver](https://github.com/rcjsuen/dockerfile-language-server-nodejs#installation-instructions)
 4. `go build`
 5. `./lsp-editor main.go`
 
