@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"os"
 	"os/exec"
 	"strconv"
 	"strings"
@@ -14,7 +15,6 @@ import (
 type Response struct {
 	Jsonrpc string `json:"jsonrpc"`
 	Id      int    `json:"id"`
-	//  Result int `json:"result"`
 }
 
 type RequestMessage struct {
@@ -36,6 +36,17 @@ type InitializeRequest struct {
 type ResponseMessage struct {
 	Jsonrpc string `json:"jsonrpc"`
 	Id      int    `json:"id"`
+}
+
+type SemanticTokensResponse struct {
+	Jsonrpc string               `json:"jsonrpc"`
+	Id      int                  `json:"id"`
+	Result  SemanticTokensResult `json:"result"`
+}
+
+type SemanticTokensResult struct {
+	ResultId string `json:"resultId"`
+	Data     []int  `json:"data"`
 }
 
 type InitializedRequest struct {
@@ -93,6 +104,9 @@ type SemanticTokensRequest struct {
 }
 
 func main() {
+	directory := "/home/christianbundy/src/lsp-editor/"
+	file := directory + "main.go"
+
 	cmd := exec.Command("gopls")
 
 	stdin, err := cmd.StdinPipe()
@@ -114,8 +128,8 @@ func main() {
 		log.Fatal(err)
 	}
 
-	directory := "file:///home/christianbundy/src/lsp-editor/"
-	file := directory + "hello.go"
+	directoryUri := "file://" + directory
+	fileUri := "file://" + file
 
 	send := func(input interface{}) bool {
 		request := input
@@ -126,11 +140,8 @@ func main() {
 
 		size := len(b)
 		out := "Content-Length: " + strconv.Itoa(size) + "\r\n\r\n" + string(b)
-		// fmt.Println("=== <send>")
-		// fmt.Println(string(out))
 
 		_, err = stdin.Write([]byte(out))
-		// fmt.Println("=== </send>")
 
 		if err != nil {
 			panic(err)
@@ -142,13 +153,9 @@ func main() {
 		var result []byte
 
 		for true {
-			// fmt.Println("receiving")
 
 			data, err := reader.ReadString('\n')
-			// fmt.Println("=== <receive.header>")
-			// fmt.Println(string(data))
 
-			// fmt.Println("=== </receive.header>")
 			if err != nil {
 				fmt.Println("invalid header")
 				continue
@@ -174,9 +181,6 @@ func main() {
 				continue
 			}
 			if decoded.Id == target {
-				// fmt.Println("=== <receive.data>")
-				// fmt.Println(string(buf))
-				// fmt.Println("=== </receive.data>")
 				result = buf
 				break
 			}
@@ -187,11 +191,11 @@ func main() {
 		Id:     1,
 		Method: "initialize",
 		Params: InitializeParams{
-			RootUri: file,
+			RootUri: fileUri,
 			WorkspaceFolders: []WorkspaceFolder{
 				WorkspaceFolder{
 					Name: "lsp-editor",
-					Uri:  directory,
+					Uri:  directoryUri,
 				},
 			},
 			InitializationOptions: InitializationOptions{
@@ -242,9 +246,75 @@ func main() {
 		Method:  "textDocument/semanticTokens/full",
 		Params: SemanticTokensParams{
 			TextDocument: TextDocumentIdentifier{
-				Uri: file,
+				Uri: fileUri,
 			},
 		},
 	})
-	fmt.Println(string(receive(3)))
+
+	out := receive(3)
+	tokens := SemanticTokensResponse{}
+	err = json.Unmarshal(out, &tokens)
+	if err != nil {
+		log.Fatal(err)
+	}
+	d := tokens.Result.Data
+
+	f, err := os.Open(file)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fileReader := bufio.NewReader(f)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	cursor := 0
+
+	for i := 0; i < len(d); i += 5 {
+
+		if d[i] > 0 {
+			for skipLines := 0; skipLines < d[i]; skipLines++ {
+				line, _, err := fileReader.ReadLine()
+				cursor = 0
+				if err != nil {
+					fmt.Println("failed during skiplines")
+					log.Fatal(err)
+				}
+				fmt.Println(string(line))
+			}
+		}
+
+		if d[i+1] > 0 {
+			skipChars := make([]byte, d[i+1]-cursor)
+			cursor += len(skipChars)
+			if _, err := io.ReadFull(fileReader, skipChars); err != nil {
+				fmt.Println("failed during skipchars")
+				log.Fatal(err)
+			}
+			fmt.Print(string(skipChars))
+		}
+
+		colorGreen := "\033[" + strconv.Itoa(31+(d[i+3]%7)) + "m"
+		colorReset := "\033[0m"
+
+		tokenChars := make([]byte, d[i+2])
+		cursor = d[i+2]
+
+		if _, err := io.ReadFull(fileReader, tokenChars); err != nil {
+			fmt.Println("failed during token")
+			log.Fatal(err)
+		}
+		fmt.Print(string(colorGreen) + string(tokenChars) + string(colorReset))
+	}
+
+	for {
+		line, _, err := fileReader.ReadLine()
+		if err != nil {
+			break
+		}
+		fmt.Println(string(line))
+	}
 }

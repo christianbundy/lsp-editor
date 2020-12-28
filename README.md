@@ -12,7 +12,7 @@ editing either of those we find ourselves editing bytes and lines (i.e. text).
 
 I've started to wonder whether there's a unified solution to both problems,
 and whether we can move past text editors to **semantic editors**, or at least
-we can move a bit in that directoin.
+we can move a bit in that direction.
 
 Anyway, I've found myself wondering whether the [Language Server Protocol][lsp]
 might be a worthwhile exploration. Most tools seem like they're [slowly]
@@ -44,22 +44,20 @@ highlighting. My day basically went like this:
 
 TL;DR: A normal morning as a software engineer.
 
-Anyway, working on Secure Scuttlebutt for years has made me [too] comfortable
-with Node.js, so I banged out a quick JavaScript prototype that connects to
-the language server, tells it where the `hello.go` file is, and then adds some
-syntax highlighting. It's _very_ basic, and the paths are hard-coded.
-
-It probably won't work for you.
+My original prototype was written in JavaScript (Node.js), but I decided to
+rewrite the project in Go so that I can [eventually] use my editor to edit
+itself and also have an excuse to suck a bit less at Go. My code is probably
+very bad and you shouldn't assume anything I'm doing is a best practice.
 
 ## Try
 
 ...but if you want to try it anyway.
 
-1. [Install gopls](https://github.com/golang/tools/blob/master/gopls/doc/user.md#installation)
-2. Install Node.js
+1. Install Go
+2. [Install gopls](https://github.com/golang/tools/blob/master/gopls/doc/user.md#installation)
 3. `git clone` and `cd` into this directory.
-4. `npm install` (only uses `chalk` library for HSV colors)
-5. `node index.js`
+4. Edit `file` and `directory` in `main()` to point to your source code.
+5. `go run main.go`
 
 If you're very lucky, you might see something like this:
 
